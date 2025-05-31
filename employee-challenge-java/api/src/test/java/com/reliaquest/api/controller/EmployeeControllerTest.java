@@ -1,9 +1,15 @@
 package com.reliaquest.api.controller;
 
+import static org.junit.jupiter.api.Assertions.*;
+import static org.mockito.Mockito.verify;
+import static org.mockito.Mockito.when;
+
 import com.reliaquest.api.dto.EmployeeDTO;
 import com.reliaquest.api.exception.ClientBadRequestException;
 import com.reliaquest.api.exception.ResourceNotFoundException;
 import com.reliaquest.api.service.EmployeeService;
+import java.util.Collections;
+import java.util.List;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -12,13 +18,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
-
-import java.util.Collections;
-import java.util.List;
-
-import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
 
 @ExtendWith(MockitoExtension.class)
 @DisplayName("EmployeeController Tests")
@@ -40,8 +39,7 @@ public class EmployeeControllerTest {
             // Arrange
             String validId = "123e4567-e89b-12d3-a456-425514174000";
             EmployeeDTO mockValidEmployee = new EmployeeDTO();
-            when(employeeService.getEmployeeById(validId))
-                    .thenReturn(mockValidEmployee);
+            when(employeeService.getEmployeeById(validId)).thenReturn(mockValidEmployee);
 
             // Act
             ResponseEntity<EmployeeDTO> response = employeeController.getEmployeeById(validId);
@@ -60,15 +58,9 @@ public class EmployeeControllerTest {
             String blankId = "";
 
             // Act & Assert
-            assertThrows(
-                    ClientBadRequestException.class,
-                    () -> employeeController.getEmployeeById(nullId)
-            );
+            assertThrows(ClientBadRequestException.class, () -> employeeController.getEmployeeById(nullId));
 
-            assertThrows(
-                    ClientBadRequestException.class,
-                    () -> employeeController.getEmployeeById(blankId)
-            );
+            assertThrows(ClientBadRequestException.class, () -> employeeController.getEmployeeById(blankId));
         }
 
         @Test
@@ -82,10 +74,7 @@ public class EmployeeControllerTest {
                     .thenThrow(new ResourceNotFoundException("Employee not found"));
 
             // Assert
-            assertThrows(
-                    ResourceNotFoundException.class,
-                    () -> employeeController.getEmployeeById(notExistingId)
-            );
+            assertThrows(ResourceNotFoundException.class, () -> employeeController.getEmployeeById(notExistingId));
         }
     }
 
@@ -97,18 +86,18 @@ public class EmployeeControllerTest {
         @DisplayName("should return all employees when employees exists")
         void shouldReturnAllEmployees_whenEmployees() {
             // Arrange
-            List<EmployeeDTO> mockEmployees = List.of(
-                    new EmployeeDTO(),
-                    new EmployeeDTO()
-            );
+            List<EmployeeDTO> mockEmployees = List.of(new EmployeeDTO(), new EmployeeDTO());
             when(employeeService.getAllEmployees()).thenReturn(mockEmployees);
 
             // Act
             ResponseEntity<List<EmployeeDTO>> response = employeeController.getAllEmployees();
 
             // Assert
+            assertNotNull(response);
+            assertNotNull(response.getBody());
             assertEquals(200, response.getStatusCode().value());
             assertEquals(mockEmployees, response.getBody());
+            assertEquals(mockEmployees.size(), response.getBody().size());
             verify(employeeService).getAllEmployees();
         }
 
@@ -132,13 +121,11 @@ public class EmployeeControllerTest {
         @DisplayName("should propagate exception if service layer throws error")
         void shouldPropagateException_whenServiceThrows() {
             // Arrange
-            when(employeeService.getAllEmployees())
-                    .thenThrow(new RuntimeException("mock employee api failed"));
+            when(employeeService.getAllEmployees()).thenThrow(new RuntimeException("mock employee api failed"));
 
             // Act & Assert
             assertThrows(RuntimeException.class, () -> employeeController.getAllEmployees());
             verify(employeeService).getAllEmployees();
         }
     }
-
 }
