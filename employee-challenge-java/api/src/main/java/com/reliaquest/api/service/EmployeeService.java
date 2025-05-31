@@ -5,8 +5,8 @@ import static com.reliaquest.api.common.Constants.*;
 import com.reliaquest.api.dto.EmployeeApiResponseWrapper;
 import com.reliaquest.api.dto.EmployeeDTO;
 import com.reliaquest.api.exception.ResourceNotFoundException;
-
 import java.util.Collections;
+import java.util.Comparator;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -65,12 +65,49 @@ public class EmployeeService {
     }
 
     public Integer getHighestSalaryOfEmployees() {
-        // TODO: call upstream API to get the highest salary of employees
-        return null;
+        try {
+            EmployeeApiResponseWrapper<List<EmployeeDTO>> responseWrapper = employeeApiClient
+                    .get()
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<EmployeeApiResponseWrapper<List<EmployeeDTO>>>() {})
+                    .block();
+
+            if (responseWrapper == null || responseWrapper.getData() == null) {
+                return 0;
+            }
+
+            return responseWrapper.getData().stream()
+                    .filter(e -> e.getEmployeeSalary() != null)
+                    .map(EmployeeDTO::getEmployeeSalary)
+                    .max(Integer::compareTo)
+                    .orElse(0);
+        } catch (WebClientRequestException ex) {
+            LOGGER.error(INTERNAL_SERVER_ERROR, ex);
+            throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
+        }
     }
 
     public List<String> getTopTenHighestEarningEmployeeNames() {
-        // TODO: call upstream API to get the top ten highest earning employee names
-        return List.of();
+        try {
+            EmployeeApiResponseWrapper<List<EmployeeDTO>> responseWrapper = employeeApiClient
+                    .get()
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<EmployeeApiResponseWrapper<List<EmployeeDTO>>>() {})
+                    .block();
+
+            if (responseWrapper == null || responseWrapper.getData() == null) {
+                return Collections.emptyList();
+            }
+
+            return responseWrapper.getData().stream()
+                    .filter(e -> e.getEmployeeSalary() != null && e.getEmployeeName() != null)
+                    .sorted(Comparator.comparing(EmployeeDTO::getEmployeeSalary).reversed())
+                    .limit(10)
+                    .map(EmployeeDTO::getEmployeeName)
+                    .toList();
+        } catch (WebClientRequestException ex) {
+            LOGGER.error(INTERNAL_SERVER_ERROR, ex);
+            throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
+        }
     }
 }
