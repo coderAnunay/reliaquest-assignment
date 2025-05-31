@@ -13,6 +13,9 @@ import org.mockito.Mock;
 import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
+import java.util.Collections;
+import java.util.List;
+
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.verify;
 import static org.mockito.Mockito.when;
@@ -28,7 +31,7 @@ public class EmployeeControllerTest {
     private EmployeeController employeeController;
 
     @Nested
-    @DisplayName("When calling getEmployeeById()")
+    @DisplayName("EmployeeController - getEmployeeById()")
     class GetEmployeeByIdTests {
 
         @Test
@@ -83,6 +86,58 @@ public class EmployeeControllerTest {
                     ResourceNotFoundException.class,
                     () -> employeeController.getEmployeeById(notExistingId)
             );
+        }
+    }
+
+    @Nested
+    @DisplayName("EmployeeController - getAllEmployees()")
+    class GetAllEmployeesTests {
+
+        @Test
+        @DisplayName("should return all employees when employees exists")
+        void shouldReturnAllEmployees_whenEmployees() {
+            // Arrange
+            List<EmployeeDTO> mockEmployees = List.of(
+                    new EmployeeDTO(),
+                    new EmployeeDTO()
+            );
+            when(employeeService.getAllEmployees()).thenReturn(mockEmployees);
+
+            // Act
+            ResponseEntity<List<EmployeeDTO>> response = employeeController.getAllEmployees();
+
+            // Assert
+            assertEquals(200, response.getStatusCode().value());
+            assertEquals(mockEmployees, response.getBody());
+            verify(employeeService).getAllEmployees();
+        }
+
+        @Test
+        @DisplayName("should return empty list with 200 when no employees exist")
+        void shouldReturnEmptyList_whenNoEmployeesExist() {
+            // Arrange
+            when(employeeService.getAllEmployees()).thenReturn(Collections.emptyList());
+
+            // Act
+            ResponseEntity<List<EmployeeDTO>> response = employeeController.getAllEmployees();
+
+            // Assert
+            assertEquals(200, response.getStatusCode().value());
+            assertNotNull(response.getBody());
+            assertTrue(response.getBody().isEmpty());
+            verify(employeeService).getAllEmployees();
+        }
+
+        @Test
+        @DisplayName("should propagate exception if service layer throws error")
+        void shouldPropagateException_whenServiceThrows() {
+            // Arrange
+            when(employeeService.getAllEmployees())
+                    .thenThrow(new RuntimeException("mock employee api failed"));
+
+            // Act & Assert
+            assertThrows(RuntimeException.class, () -> employeeController.getAllEmployees());
+            verify(employeeService).getAllEmployees();
         }
     }
 
