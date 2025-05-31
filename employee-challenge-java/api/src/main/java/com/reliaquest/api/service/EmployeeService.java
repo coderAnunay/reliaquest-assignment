@@ -1,8 +1,13 @@
 package com.reliaquest.api.service;
 
+import static com.reliaquest.api.common.Constants.*;
+
 import com.reliaquest.api.dto.EmployeeApiResponseWrapper;
 import com.reliaquest.api.dto.EmployeeDTO;
 import com.reliaquest.api.exception.ResourceNotFoundException;
+
+import java.util.Collections;
+import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -10,10 +15,6 @@ import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
-
-import java.util.List;
-
-import static com.reliaquest.api.common.Constants.*;
 
 @Service
 public class EmployeeService {
@@ -28,12 +29,12 @@ public class EmployeeService {
 
     public EmployeeDTO getEmployeeById(final String id) {
         try {
-            EmployeeApiResponseWrapper<EmployeeDTO> responseWrapper
-                    = employeeApiClient.get()
-                        .uri(GET_EMPLOYEE_BY_ID_URI, id)
-                        .retrieve()
-                        .bodyToMono(new ParameterizedTypeReference<EmployeeApiResponseWrapper<EmployeeDTO>>() {})
-                        .block();
+            EmployeeApiResponseWrapper<EmployeeDTO> responseWrapper = employeeApiClient
+                    .get()
+                    .uri(GET_EMPLOYEE_BY_ID_URI, id)
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<EmployeeApiResponseWrapper<EmployeeDTO>>() {})
+                    .block();
             return responseWrapper != null ? responseWrapper.getData() : null;
         } catch (WebClientResponseException.NotFound ex) {
             LOGGER.error(EMPLOYEE_NOT_FOUND, ex);
@@ -45,8 +46,17 @@ public class EmployeeService {
     }
 
     public List<EmployeeDTO> getAllEmployees() {
-        // TODO: call upstream API to get all employees
-        return List.of();
+        try {
+            EmployeeApiResponseWrapper<List<EmployeeDTO>> responseWrapper = employeeApiClient
+                    .get()
+                    .retrieve()
+                    .bodyToMono(new ParameterizedTypeReference<EmployeeApiResponseWrapper<List<EmployeeDTO>>>() {})
+                    .block();
+            return responseWrapper != null ? responseWrapper.getData() : Collections.emptyList();
+        } catch (WebClientRequestException ex) {
+            LOGGER.error(INTERNAL_SERVER_ERROR, ex);
+            throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
+        }
     }
 
     public List<EmployeeDTO> getEmployeesByNameSearch(final String searchString) {
