@@ -1,0 +1,10 @@
+server:
+  port: 8111
+
+spring:
+  application:
+    name: employee-api
+
+mock-employee-api:
+  host: http://localhost:8112
+  path: /api/v1/employee
