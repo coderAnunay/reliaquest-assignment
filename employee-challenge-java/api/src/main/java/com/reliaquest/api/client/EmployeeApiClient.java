@@ -14,10 +14,9 @@ public class EmployeeApiClient {
 
     private final WebClient employeeApiClient;
 
-    public EmployeeApiClient(WebClient employeeApiClient) {
-        this.employeeApiClient = employeeApiClient;
+    public EmployeeApiClient(WebClient webClient) {
+        this.employeeApiClient = webClient;
     }
-
     /**
      * Performs a GET call to the given URI with path variables and returns the `data` field
      * from the upstream response, unwrapped from the response wrapper.
