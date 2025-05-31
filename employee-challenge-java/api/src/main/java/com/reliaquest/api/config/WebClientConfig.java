@@ -8,7 +8,7 @@ import org.springframework.web.reactive.function.client.WebClient;
 public class WebClientConfig {
 
     @Bean
-    public WebClient employeeApiClient(MockServerApiProperties props) {
+    public WebClient webClient(MockServerApiProperties props) {
         return WebClient.builder().baseUrl(props.getEmployeeApiUrl()).build();
     }
 }
