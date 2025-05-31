@@ -38,7 +38,13 @@ public class EmployeeControllerTest {
         void shouldReturnEmployee_whenEmployeeIdIsValid() {
             // Arrange
             String validId = "123e4567-e89b-12d3-a456-425514174000";
-            EmployeeDTO mockValidEmployee = new EmployeeDTO();
+            EmployeeDTO mockValidEmployee = new EmployeeDTO(
+                    "123e4567-e89b-12d3-a456-425514174000",
+                    "Jim Donga",
+                    64350,
+                    28,
+                    "Construction Field Staff",
+                    "jim@company.com");
             when(employeeService.getEmployeeById(validId)).thenReturn(mockValidEmployee);
 
             // Act
@@ -83,10 +89,24 @@ public class EmployeeControllerTest {
     class GetAllEmployeesTests {
 
         @Test
-        @DisplayName("should return all employees when employees exists")
-        void shouldReturnAllEmployees_whenEmployees() {
+        @DisplayName("should return all employees when employees exist")
+        void shouldReturnAllEmployees_whenEmployeesExist() {
             // Arrange
-            List<EmployeeDTO> mockEmployees = List.of(new EmployeeDTO(), new EmployeeDTO());
+            List<EmployeeDTO> mockEmployees = List.of(
+                    new EmployeeDTO(
+                            "4a76c411-e94b-4cff-bbc2-a746249f175d",
+                            "Reid Graham",
+                            90155,
+                            25,
+                            "Construction Producer",
+                            "konklux@company.com"),
+                    new EmployeeDTO(
+                            "bfa01553-68f7-49c4-b0g7-780002e9ebf2",
+                            "Jim Donga",
+                            64350,
+                            28,
+                            "Construction Field Staff",
+                            "jim@company.com"));
             when(employeeService.getAllEmployees()).thenReturn(mockEmployees);
 
             // Act
@@ -119,13 +139,46 @@ public class EmployeeControllerTest {
 
         @Test
         @DisplayName("should propagate exception if service layer throws error")
-        void shouldPropagateException_whenServiceThrows() {
+        void shouldPropagateException_whenServiceThrowsError() {
             // Arrange
             when(employeeService.getAllEmployees()).thenThrow(new RuntimeException("mock employee api failed"));
 
             // Act & Assert
             assertThrows(RuntimeException.class, () -> employeeController.getAllEmployees());
             verify(employeeService).getAllEmployees();
+        }
+    }
+
+    @Nested
+    @DisplayName("EmployeeController - getHighestSalaryOfEmployees()")
+    class GetHighestSalaryTests {
+
+        @Test
+        @DisplayName("should return highest salary out of all employees")
+        void shouldReturnHighestSalary_whenEmployeesExist() {
+            // Arrange
+            Integer expectedHighestSalary = 208820;
+            when(employeeService.getHighestSalaryOfEmployees()).thenReturn(expectedHighestSalary);
+
+            // Act
+            ResponseEntity<Integer> response = employeeController.getHighestSalaryOfEmployees();
+
+            // Assert
+            assertEquals(200, response.getStatusCode().value());
+            assertEquals(expectedHighestSalary, response.getBody());
+            verify(employeeService).getHighestSalaryOfEmployees();
+        }
+
+        @Test
+        @DisplayName("should propagate exception when service layer throws error")
+        void shouldPropagateException_whenServiceThrowsError() {
+            // Arrange
+            when(employeeService.getHighestSalaryOfEmployees())
+                    .thenThrow(new RuntimeException("Mock employee api failed"));
+
+            // Act & Assert
+            assertThrows(RuntimeException.class, () -> employeeController.getHighestSalaryOfEmployees());
+            verify(employeeService).getHighestSalaryOfEmployees();
         }
     }
 }
