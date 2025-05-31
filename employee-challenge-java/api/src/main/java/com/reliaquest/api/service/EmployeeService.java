@@ -2,7 +2,6 @@ package com.reliaquest.api.service;
 
 import com.reliaquest.api.dto.EmployeeApiResponseWrapper;
 import com.reliaquest.api.dto.EmployeeDTO;
-import com.reliaquest.api.exception.ClientBadRequestException;
 import com.reliaquest.api.exception.ResourceNotFoundException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,8 +11,6 @@ import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
 
 import static com.reliaquest.api.common.Constants.*;
@@ -45,5 +42,25 @@ public class EmployeeService {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
         }
+    }
+
+    public List<EmployeeDTO> getAllEmployees() {
+        // TODO: call upstream API to get all employees
+        return List.of();
+    }
+
+    public List<EmployeeDTO> getEmployeesByNameSearch(final String searchString) {
+        // TODO: call upstream API to search employees by name
+        return List.of();
+    }
+
+    public Integer getHighestSalaryOfEmployees() {
+        // TODO: call upstream API to get the highest salary of employees
+        return null;
+    }
+
+    public List<String> getTopTenHighestEarningEmployeeNames() {
+        // TODO: call upstream API to get the top ten highest earning employee names
+        return List.of();
     }
 }
