@@ -6,13 +6,11 @@ import static org.mockito.Mockito.*;
 
 import com.reliaquest.api.client.EmployeeApiClient;
 import com.reliaquest.api.dto.EmployeeDTO;
-
+import com.reliaquest.api.exception.ResourceNotFoundException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Objects;
-
-import com.reliaquest.api.exception.ResourceNotFoundException;
 import org.junit.jupiter.api.DisplayName;
 import org.junit.jupiter.api.Nested;
 import org.junit.jupiter.api.Test;
@@ -96,7 +94,8 @@ public class EmployeeServiceTest {
         @DisplayName("should propagate ResourceNotFoundException when upstream api returns 404")
         void shouldPropagateNotFound_whenUpstreamReturns404() {
             // Arrange
-            when(employeeApiClient.get(anyString(), any(), any())).thenThrow(mock(WebClientResponseException.NotFound.class));
+            when(employeeApiClient.get(anyString(), any(), any()))
+                    .thenThrow(mock(WebClientResponseException.NotFound.class));
             String id = mockSingleEmployee.getId();
 
             // Act & Assert
@@ -107,8 +106,7 @@ public class EmployeeServiceTest {
         @DisplayName("should propagate RuntimeException on request failure")
         void shouldPropagateRuntimeException_whenRequestFails() {
             // Arrange
-            when(employeeApiClient.get(anyString(), any(), any()))
-                    .thenThrow(mock(WebClientRequestException.class));
+            when(employeeApiClient.get(anyString(), any(), any())).thenThrow(mock(WebClientRequestException.class));
             String id = mockSingleEmployee.getId();
 
             // Act & Assert
@@ -200,7 +198,8 @@ public class EmployeeServiceTest {
         void shouldReturnTopTenNamesInOrder() {
             // Arrange
             when(employeeApiClient.get(any())).thenReturn(mockEmployees);
-            List<String> expectedNamesList = mockEmployees.stream().filter(e -> e.getEmployeeSalary() != null && e.getEmployeeName() != null)
+            List<String> expectedNamesList = mockEmployees.stream()
+                    .filter(e -> e.getEmployeeSalary() != null && e.getEmployeeName() != null)
                     .sorted(Comparator.comparing(EmployeeDTO::getEmployeeSalary).reversed())
                     .limit(10)
                     .map(EmployeeDTO::getEmployeeName)
