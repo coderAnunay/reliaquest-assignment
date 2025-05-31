@@ -28,7 +28,8 @@ public class EmployeeService {
 
     public EmployeeDTO getEmployeeById(final String id) {
         try {
-            EmployeeDTO employee = employeeApiClient.get(GET_EMPLOYEE_BY_ID_URI, new Object[]{id}, new ParameterizedTypeReference<>() {});
+            EmployeeDTO employee = employeeApiClient.get(
+                    GET_EMPLOYEE_BY_ID_URI, new Object[] {id}, new ParameterizedTypeReference<>() {});
             return employee;
         } catch (WebClientResponseException.NotFound ex) {
             LOGGER.error(EMPLOYEE_NOT_FOUND, ex);

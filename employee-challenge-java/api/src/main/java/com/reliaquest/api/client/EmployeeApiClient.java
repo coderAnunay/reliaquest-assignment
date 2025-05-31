@@ -27,8 +27,10 @@ public class EmployeeApiClient {
      * @param <T> the type of the unwrapped data object
      * @return the unwrapped data, or null if the response is empty
      */
-    public <T> T get(String uriTemplate, Object[] uriVars, ParameterizedTypeReference<EmployeeApiResponseWrapper<T>> type) {
-        EmployeeApiResponseWrapper<T> responseWrapper = employeeApiClient.get()
+    public <T> T get(
+            String uriTemplate, Object[] uriVars, ParameterizedTypeReference<EmployeeApiResponseWrapper<T>> type) {
+        EmployeeApiResponseWrapper<T> responseWrapper = employeeApiClient
+                .get()
                 .uri(uriTemplate, uriVars)
                 .retrieve()
                 .bodyToMono(type)
@@ -45,11 +47,9 @@ public class EmployeeApiClient {
      * @return the unwrapped data, or null if the response is empty
      */
     public <T> T get(ParameterizedTypeReference<EmployeeApiResponseWrapper<T>> type) {
-         EmployeeApiResponseWrapper<T> responseWrapper = employeeApiClient.get()
-                .retrieve()
-                .bodyToMono(type)
-                .block();
+        EmployeeApiResponseWrapper<T> responseWrapper =
+                employeeApiClient.get().retrieve().bodyToMono(type).block();
 
-         return responseWrapper != null ? responseWrapper.getData() : null;
+        return responseWrapper != null ? responseWrapper.getData() : null;
     }
 }
