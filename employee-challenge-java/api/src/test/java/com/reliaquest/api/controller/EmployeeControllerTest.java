@@ -181,4 +181,38 @@ public class EmployeeControllerTest {
             verify(employeeService).getHighestSalaryOfEmployees();
         }
     }
+
+    @Nested
+    @DisplayName("EmployeeController - getTopTenHighestEarningEmployeeNames()")
+    class GetTopTenHighestEarnersTests {
+
+        @Test
+        @DisplayName("should return top 10 employee names when data exists")
+        void shouldReturnTopTenNames_whenDataExists() {
+            // Arrange
+            List<String> topTen = List.of("Alice", "Bob", "Charlie", "David", "Eve",
+                    "Frank", "Grace", "Heidi", "Ivan", "Judy");
+            when(employeeService.getTopTenHighestEarningEmployeeNames()).thenReturn(topTen);
+
+            // Act
+            ResponseEntity<List<String>> response = employeeController.getTopTenHighestEarningEmployeeNames();
+
+            // Assert
+            assertEquals(200, response.getStatusCode().value());
+            assertEquals(topTen, response.getBody());
+            verify(employeeService).getTopTenHighestEarningEmployeeNames();
+        }
+
+        @Test
+        @DisplayName("should propagate exception when service layer throws error")
+        void shouldPropagateException_whenServiceThrowsError() {
+            // Arrange
+            when(employeeService.getTopTenHighestEarningEmployeeNames())
+                    .thenThrow(new RuntimeException("Mock employee api failed"));
+
+            // Act & Assert
+            assertThrows(RuntimeException.class, () -> employeeController.getTopTenHighestEarningEmployeeNames());
+            verify(employeeService).getTopTenHighestEarningEmployeeNames();
+        }
+    }
 }
