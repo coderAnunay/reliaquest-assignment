@@ -9,8 +9,6 @@ public class WebClientConfig {
 
     @Bean
     public WebClient employeeApiClient(MockServerApiProperties props) {
-        return WebClient.builder()
-                .baseUrl(props.getEmployeeApiUrl())
-                .build();
+        return WebClient.builder().baseUrl(props.getEmployeeApiUrl()).build();
     }
 }

@@ -4,11 +4,10 @@ import com.reliaquest.api.dto.CreateEmployeeDTO;
 import com.reliaquest.api.dto.EmployeeDTO;
 import com.reliaquest.api.exception.ClientBadRequestException;
 import com.reliaquest.api.service.EmployeeService;
-import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.RestController;
-
 import java.util.List;
 import java.util.UUID;
+import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RestController;
 
 @RestController
 public class EmployeeController implements IEmployeeController<EmployeeDTO, CreateEmployeeDTO> {
@@ -21,16 +20,14 @@ public class EmployeeController implements IEmployeeController<EmployeeDTO, Crea
 
     @Override
     public ResponseEntity<List<EmployeeDTO>> getAllEmployees() {
-//        List<EmployeeDTO> employees = employeeService.getAllEmployees();
-//        return ResponseEntity.ok(employees);
-        return null;
+        List<EmployeeDTO> employees = employeeService.getAllEmployees();
+        return ResponseEntity.ok(employees);
     }
 
     @Override
     public ResponseEntity<List<EmployeeDTO>> getEmployeesByNameSearch(String searchString) {
-//        List<EmployeeDTO> matches = employeeService.getEmployeesByNameSearch(searchString);
-//        return ResponseEntity.ok(matches);
-        return null;
+        List<EmployeeDTO> matches = employeeService.getEmployeesByNameSearch(searchString);
+        return ResponseEntity.ok(matches);
     }
 
     @Override
@@ -51,16 +48,14 @@ public class EmployeeController implements IEmployeeController<EmployeeDTO, Crea
 
     @Override
     public ResponseEntity<Integer> getHighestSalaryOfEmployees() {
-//        Integer highestSalary = employeeService.getHighestSalaryOfEmployees();
-//        return ResponseEntity.ok(highestSalary);
-        return null;
+        Integer highestSalary = employeeService.getHighestSalaryOfEmployees();
+        return ResponseEntity.ok(highestSalary);
     }
 
     @Override
     public ResponseEntity<List<String>> getTopTenHighestEarningEmployeeNames() {
-//        List<String> names = employeeService.getTopTenHighestEarningEmployeeNames();
-//        return ResponseEntity.ok(names);
-        return null;
+        List<String> names = employeeService.getTopTenHighestEarningEmployeeNames();
+        return ResponseEntity.ok(names);
     }
 
     @Override
