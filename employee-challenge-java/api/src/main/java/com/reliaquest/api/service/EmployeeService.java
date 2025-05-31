@@ -2,7 +2,7 @@ package com.reliaquest.api.service;
 
 import static com.reliaquest.api.common.Constants.*;
 
-import com.reliaquest.api.dto.EmployeeApiResponseWrapper;
+import com.reliaquest.api.client.EmployeeApiClient;
 import com.reliaquest.api.dto.EmployeeDTO;
 import com.reliaquest.api.exception.ResourceNotFoundException;
 import java.util.Collections;
@@ -12,7 +12,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClient;
 import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
@@ -21,21 +20,16 @@ public class EmployeeService {
 
     private static final Logger LOGGER = LoggerFactory.getLogger(EmployeeService.class);
 
-    private final WebClient employeeApiClient;
+    private final EmployeeApiClient employeeApiClient;
 
-    public EmployeeService(final WebClient employeeApiClient) {
+    public EmployeeService(final EmployeeApiClient employeeApiClient) {
         this.employeeApiClient = employeeApiClient;
     }
 
     public EmployeeDTO getEmployeeById(final String id) {
         try {
-            EmployeeApiResponseWrapper<EmployeeDTO> responseWrapper = employeeApiClient
-                    .get()
-                    .uri(GET_EMPLOYEE_BY_ID_URI, id)
-                    .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<EmployeeApiResponseWrapper<EmployeeDTO>>() {})
-                    .block();
-            return responseWrapper != null ? responseWrapper.getData() : null;
+            EmployeeDTO employee = employeeApiClient.get(GET_EMPLOYEE_BY_ID_URI, new Object[]{id}, new ParameterizedTypeReference<>() {});
+            return employee;
         } catch (WebClientResponseException.NotFound ex) {
             LOGGER.error(EMPLOYEE_NOT_FOUND, ex);
             throw new ResourceNotFoundException(EMPLOYEE_NOT_FOUND);
@@ -47,12 +41,8 @@ public class EmployeeService {
 
     public List<EmployeeDTO> getAllEmployees() {
         try {
-            EmployeeApiResponseWrapper<List<EmployeeDTO>> responseWrapper = employeeApiClient
-                    .get()
-                    .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<EmployeeApiResponseWrapper<List<EmployeeDTO>>>() {})
-                    .block();
-            return responseWrapper != null ? responseWrapper.getData() : Collections.emptyList();
+            List<EmployeeDTO> employees = employeeApiClient.get(new ParameterizedTypeReference<>() {});
+            return employees;
         } catch (WebClientRequestException ex) {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
@@ -66,19 +56,15 @@ public class EmployeeService {
 
     public Integer getHighestSalaryOfEmployees() {
         try {
-            EmployeeApiResponseWrapper<List<EmployeeDTO>> responseWrapper = employeeApiClient
-                    .get()
-                    .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<EmployeeApiResponseWrapper<List<EmployeeDTO>>>() {})
-                    .block();
+            List<EmployeeDTO> employees = employeeApiClient.get(new ParameterizedTypeReference<>() {});
 
-            if (responseWrapper == null || responseWrapper.getData() == null) {
+            if (employees == null) {
                 return 0;
             }
 
-            return responseWrapper.getData().stream()
-                    .filter(e -> e.getEmployeeSalary() != null)
+            return employees.stream()
                     .map(EmployeeDTO::getEmployeeSalary)
+                    .filter(employeeSalary -> employeeSalary != null)
                     .max(Integer::compareTo)
                     .orElse(0);
         } catch (WebClientRequestException ex) {
@@ -89,17 +75,13 @@ public class EmployeeService {
 
     public List<String> getTopTenHighestEarningEmployeeNames() {
         try {
-            EmployeeApiResponseWrapper<List<EmployeeDTO>> responseWrapper = employeeApiClient
-                    .get()
-                    .retrieve()
-                    .bodyToMono(new ParameterizedTypeReference<EmployeeApiResponseWrapper<List<EmployeeDTO>>>() {})
-                    .block();
+            List<EmployeeDTO> employees = employeeApiClient.get(new ParameterizedTypeReference<>() {});
 
-            if (responseWrapper == null || responseWrapper.getData() == null) {
+            if (employees == null) {
                 return Collections.emptyList();
             }
 
-            return responseWrapper.getData().stream()
+            return employees.stream()
                     .filter(e -> e.getEmployeeSalary() != null && e.getEmployeeName() != null)
                     .sorted(Comparator.comparing(EmployeeDTO::getEmployeeSalary).reversed())
                     .limit(10)
