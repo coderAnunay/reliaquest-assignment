@@ -20,7 +20,7 @@ import org.mockito.junit.jupiter.MockitoExtension;
 import org.springframework.http.ResponseEntity;
 
 @ExtendWith(MockitoExtension.class)
-@DisplayName("EmployeeController Tests")
+@DisplayName("EmployeeController Unit Tests")
 public class EmployeeControllerTest {
 
     @Mock
@@ -190,8 +190,8 @@ public class EmployeeControllerTest {
         @DisplayName("should return top 10 employee names when data exists")
         void shouldReturnTopTenNames_whenDataExists() {
             // Arrange
-            List<String> topTen = List.of("Alice", "Bob", "Charlie", "David", "Eve",
-                    "Frank", "Grace", "Heidi", "Ivan", "Judy");
+            List<String> topTen =
+                    List.of("Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy");
             when(employeeService.getTopTenHighestEarningEmployeeNames()).thenReturn(topTen);
 
             // Act
