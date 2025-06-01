@@ -3,6 +3,7 @@ package com.reliaquest.api.service;
 import static com.reliaquest.api.common.Constants.*;
 
 import com.reliaquest.api.client.EmployeeApiClient;
+import com.reliaquest.api.dto.CreateEmployeeDTO;
 import com.reliaquest.api.dto.EmployeeDTO;
 import com.reliaquest.api.exception.ResourceNotFoundException;
 import java.util.Collections;
@@ -107,5 +108,13 @@ public class EmployeeService {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
         }
+    }
+
+    public EmployeeDTO createEmployee(final CreateEmployeeDTO input) {
+        return null;
+    }
+
+    public String deleteEmployeeById(final String id) {
+        return null;
     }
 }
