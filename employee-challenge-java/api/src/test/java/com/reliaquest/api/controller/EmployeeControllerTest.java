@@ -269,7 +269,6 @@ public class EmployeeControllerTest {
             input.setSalary(mockSingleEmployee.getEmployeeSalary());
             input.setAge(mockSingleEmployee.getEmployeeAge());
             input.setTitle(mockSingleEmployee.getEmployeeTitle());
-            input.setEmail(mockSingleEmployee.getEmployeeEmail());
 
             when(employeeService.createEmployee(input)).thenReturn(mockSingleEmployee);
 
@@ -316,7 +315,8 @@ public class EmployeeControllerTest {
         @DisplayName("should delete employee when ID is valid UUID")
         void shouldDeleteEmployeeWhenIdIsValid() {
             // Arrange
-            when(employeeService.deleteEmployeeById(mockSingleEmployee.getId())).thenReturn(mockSingleEmployee.getEmployeeName());
+            when(employeeService.deleteEmployeeById(mockSingleEmployee.getId()))
+                    .thenReturn(mockSingleEmployee.getEmployeeName());
 
             // Act
             ResponseEntity<String> response = employeeController.deleteEmployeeById(mockSingleEmployee.getId());
