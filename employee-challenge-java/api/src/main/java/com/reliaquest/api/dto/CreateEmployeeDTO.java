@@ -18,8 +18,4 @@ public class CreateEmployeeDTO {
 
     @NotBlank(message = "Title must not be blank")
     private String title;
-
-    @Email(message = "Email should be valid")
-    @NotBlank(message = "Email must not be blank")
-    private String email;
 }

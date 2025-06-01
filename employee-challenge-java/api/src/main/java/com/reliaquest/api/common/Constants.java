@@ -4,6 +4,7 @@ public final class Constants {
 
     // URIs
     public static final String GET_EMPLOYEE_BY_ID_URI = "/{id}";
+    public static final String DELETE_EMPLOYEE_BY_URI = "/{id}";
 
     // Exception Strings
     public static final String EMPLOYEE_NOT_FOUND = "Employee not found. ";
