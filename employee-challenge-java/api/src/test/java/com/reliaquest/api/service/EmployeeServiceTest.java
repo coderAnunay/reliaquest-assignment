@@ -189,4 +189,85 @@ public class EmployeeServiceTest {
             assertThrows(RuntimeException.class, () -> employeeService.getTopTenHighestEarningEmployeeNames());
         }
     }
+
+    @Nested
+    @DisplayName("EmployeeService - getEmployeesByNameSearch()")
+    class GetEmployeesByNameSearchTests {
+
+        private List<String> names = List.of("Alice Johnson", "Bob Smith", "Bobby Brown", "Charlie Davis", "John King");
+
+        private List<EmployeeDTO> testEmployees = TestDataFactory.getTestEmployeeDTOList(names);
+
+        @Test
+        @DisplayName("should return matching employees amongst returned employee list from upstream")
+        void shouldReturnMatchingEmployees() {
+            // Arrange
+            final String alice1 = "alice";
+            final String alice2 = "Alice";
+            final String alice3 = "ALICE";
+            final String john = "john";
+            final String bob1 = "bob";
+            final String bob2 = "BOB";
+            final String bob3 = "Bob";
+            final String kevin = "kevin";
+
+            when(employeeApiClient.get(any())).thenReturn(testEmployees);
+
+            // Act & Assert
+            List<EmployeeDTO> aliceResults1 = employeeService.getEmployeesByNameSearch(alice1);
+            List<EmployeeDTO> aliceResults2 = employeeService.getEmployeesByNameSearch(alice2);
+            List<EmployeeDTO> aliceResults3 = employeeService.getEmployeesByNameSearch(alice3);
+            assertEquals(1, aliceResults1.size());
+            assertTrue(aliceResults1.get(0).getEmployeeName().equalsIgnoreCase("Alice Johnson"));
+            assertEquals(1, aliceResults2.size());
+            assertTrue(aliceResults2.get(0).getEmployeeName().equalsIgnoreCase("Alice Johnson"));
+            assertEquals(1, aliceResults3.size());
+            assertTrue(aliceResults3.get(0).getEmployeeName().equalsIgnoreCase("Alice Johnson"));
+
+            List<EmployeeDTO> johnResults = employeeService.getEmployeesByNameSearch(john);
+            assertEquals(2, johnResults.size());
+            assertTrue(johnResults.stream()
+                    .allMatch(e -> e.getEmployeeName().toLowerCase().contains("john")));
+
+            List<EmployeeDTO> bobResults1 = employeeService.getEmployeesByNameSearch(bob1);
+            List<EmployeeDTO> bobResults2 = employeeService.getEmployeesByNameSearch(bob2);
+            List<EmployeeDTO> bobResults3 = employeeService.getEmployeesByNameSearch(bob3);
+            assertEquals(2, bobResults1.size());
+            assertTrue(bobResults1.stream()
+                    .allMatch(e -> e.getEmployeeName().toLowerCase().contains("bob")));
+            assertEquals(2, bobResults2.size());
+            assertTrue(bobResults2.stream()
+                    .allMatch(e -> e.getEmployeeName().toLowerCase().contains("bob")));
+            assertEquals(2, bobResults3.size());
+            assertTrue(bobResults3.stream()
+                    .allMatch(e -> e.getEmployeeName().toLowerCase().contains("bob")));
+
+            List<EmployeeDTO> kevinResults = employeeService.getEmployeesByNameSearch(kevin);
+            assertTrue(kevinResults.isEmpty());
+        }
+
+        @Test
+        @DisplayName("should return empty list when upstream returns no data")
+        void shouldReturnEmptyList_whenUpstreamReturnsNoData() {
+            // Arrange
+            when(employeeApiClient.get(any())).thenReturn(null);
+
+            // Act
+            List<EmployeeDTO> result = employeeService.getEmployeesByNameSearch(anyString());
+
+            // Assert
+            assertNotNull(result);
+            assertTrue(result.isEmpty());
+        }
+
+        @Test
+        @DisplayName("should throw RuntimeException when upstream api dails")
+        void shouldThrowRuntimeException_whenUpstreamApiFails() {
+            // Arrange
+            when(employeeApiClient.get(any())).thenThrow(mock(WebClientRequestException.class));
+
+            // Act & Assert
+            assertThrows(RuntimeException.class, () -> employeeService.getEmployeesByNameSearch(anyString()));
+        }
+    }
 }

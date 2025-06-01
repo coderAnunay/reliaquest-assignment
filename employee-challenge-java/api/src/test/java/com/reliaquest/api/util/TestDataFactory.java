@@ -29,6 +29,22 @@ public class TestDataFactory {
         return IntStream.range(0, count).mapToObj(i -> getTestEmployeeDTO()).toList();
     }
 
+    public static List<EmployeeDTO> getTestEmployeeDTOList(List<String> names) {
+        return IntStream.range(0, names.size())
+                .mapToObj(i -> {
+                    String name = names.get(i);
+                    return new EmployeeDTO(
+                            UUID.randomUUID().toString(),
+                            name,
+                            faker.number()
+                                    .numberBetween(employeeSalaryRange.get("min"), employeeSalaryRange.get("max")),
+                            faker.number().numberBetween(employeeAgeRange.get("min"), employeeAgeRange.get("max")),
+                            faker.job().title(),
+                            faker.internet().emailAddress());
+                })
+                .toList();
+    }
+
     public static int getHighestSalary(List<EmployeeDTO> employees) {
         return Optional.ofNullable(employees).orElse(List.of()).stream()
                 .filter(e -> e.getEmployeeSalary() != null)

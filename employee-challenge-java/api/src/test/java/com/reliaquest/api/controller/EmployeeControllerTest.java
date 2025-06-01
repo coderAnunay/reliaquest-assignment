@@ -1,8 +1,7 @@
 package com.reliaquest.api.controller;
 
 import static org.junit.jupiter.api.Assertions.*;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
+import static org.mockito.Mockito.*;
 
 import com.reliaquest.api.dto.EmployeeDTO;
 import com.reliaquest.api.exception.ClientBadRequestException;
@@ -138,7 +137,7 @@ public class EmployeeControllerTest {
         @DisplayName("should return highest salary out of all employees")
         void shouldReturnHighestSalary_whenEmployeesExist() {
             // Arrange
-            Integer expectedHighestSalary = 208820;
+            Integer expectedHighestSalary = TestDataFactory.getHighestSalary(mockEmployees);
             when(employeeService.getHighestSalaryOfEmployees()).thenReturn(expectedHighestSalary);
 
             // Act
@@ -171,8 +170,7 @@ public class EmployeeControllerTest {
         @DisplayName("should return top 10 employee names when data exists")
         void shouldReturnTopTenNames_whenDataExists() {
             // Arrange
-            List<String> topTen =
-                    List.of("Alice", "Bob", "Charlie", "David", "Eve", "Frank", "Grace", "Heidi", "Ivan", "Judy");
+            List<String> topTen = TestDataFactory.getTopTenHighestEarningEmployeeNames(mockEmployees);
             when(employeeService.getTopTenHighestEarningEmployeeNames()).thenReturn(topTen);
 
             // Act
@@ -194,6 +192,66 @@ public class EmployeeControllerTest {
             // Act & Assert
             assertThrows(RuntimeException.class, () -> employeeController.getTopTenHighestEarningEmployeeNames());
             verify(employeeService).getTopTenHighestEarningEmployeeNames();
+        }
+    }
+
+    @Nested
+    @DisplayName("EmployeeController - getEmployeesByNameSearch()")
+    class GetEmployeesByNameSearchTests {
+
+        @Test
+        @DisplayName("should return employees whose name contains the search string")
+        void shouldReturnMatchingEmployees() {
+            // Arrange
+            EmployeeDTO tom1 = new EmployeeDTO("1", "Tom Daryl", 75000, 32, "Engineer", "tomdaryl@company.com");
+            EmployeeDTO tom2 = new EmployeeDTO("2", "Tom Finsey", 80000, 29, "Analyst", "tomfinsey@company.com");
+
+            final String searchQuery = "Tom";
+            List<EmployeeDTO> expectedMatches = List.of(tom1, tom2);
+            when(employeeService.getEmployeesByNameSearch(searchQuery)).thenReturn(expectedMatches);
+
+            // Act
+            ResponseEntity<List<EmployeeDTO>> response = employeeController.getEmployeesByNameSearch(searchQuery);
+
+            // Assert
+            assertEquals(200, response.getStatusCode().value());
+            assertEquals(expectedMatches, response.getBody());
+            verify(employeeService).getEmployeesByNameSearch(searchQuery);
+        }
+
+        @Test
+        @DisplayName("should return empty list when no employees match the search")
+        void shouldReturnEmptyList_whenNoMatches() {
+            // Arrange
+            final String searchQuery = "Tom";
+            when(employeeService.getEmployeesByNameSearch(searchQuery)).thenReturn(List.of());
+
+            // Act
+            ResponseEntity<List<EmployeeDTO>> response = employeeController.getEmployeesByNameSearch(searchQuery);
+
+            // Assert
+            assertEquals(200, response.getStatusCode().value());
+            assertTrue(response.getBody().isEmpty());
+            verify(employeeService).getEmployeesByNameSearch(searchQuery);
+        }
+
+        @Test
+        @DisplayName("should throw Client Bad Request when search string is blank or empty")
+        void shouldThrowClientBadRequest_whenSearchStringBlankOrEmpty() {
+            // Arrange
+            String invalidSearchBlank = " ";
+            String invalidSearchEmpty = "";
+
+            // Act & Assert
+            assertThrows(ClientBadRequestException.class, () -> {
+                employeeController.getEmployeesByNameSearch(invalidSearchBlank);
+            });
+
+            assertThrows(ClientBadRequestException.class, () -> {
+                employeeController.getEmployeesByNameSearch(invalidSearchEmpty);
+            });
+
+            verify(employeeService, never()).getEmployeesByNameSearch(any());
         }
     }
 }
