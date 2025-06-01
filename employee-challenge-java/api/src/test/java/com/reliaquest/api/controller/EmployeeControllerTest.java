@@ -3,6 +3,7 @@ package com.reliaquest.api.controller;
 import static org.junit.jupiter.api.Assertions.*;
 import static org.mockito.Mockito.*;
 
+import com.reliaquest.api.dto.CreateEmployeeDTO;
 import com.reliaquest.api.dto.EmployeeDTO;
 import com.reliaquest.api.exception.ClientBadRequestException;
 import com.reliaquest.api.exception.ResourceNotFoundException;
@@ -252,6 +253,48 @@ public class EmployeeControllerTest {
             });
 
             verify(employeeService, never()).getEmployeesByNameSearch(any());
+        }
+    }
+
+    @Nested
+    @DisplayName("EmployeeController - createEmployee() and deleteEmployeeById()")
+    class CreateAndDeleteEmployeeTests {
+
+        @Test
+        @DisplayName("should create employee successfully")
+        void shouldCreateEmployeeSuccessfully() {
+            // Arrange
+            CreateEmployeeDTO input = new CreateEmployeeDTO();
+            input.setName(mockSingleEmployee.getEmployeeName());
+            input.setSalary(mockSingleEmployee.getEmployeeSalary());
+            input.setAge(mockSingleEmployee.getEmployeeAge());
+            input.setTitle(mockSingleEmployee.getEmployeeTitle());
+            input.setEmail(mockSingleEmployee.getEmployeeEmail());
+
+            when(employeeService.createEmployee(input)).thenReturn(mockSingleEmployee);
+
+            // Act
+            ResponseEntity<EmployeeDTO> response = employeeController.createEmployee(input);
+
+            // Assert
+            assertEquals(201, response.getStatusCode().value());
+            assertEquals(mockSingleEmployee, response.getBody());
+            verify(employeeService).createEmployee(input);
+        }
+
+        @Test
+        @DisplayName("should delete employee by ID and return the name of the deleted employee")
+        void shouldDeleteEmployeeSuccessfullyAndReturnName() {
+            // Arrange
+            when(employeeService.deleteEmployeeById(anyString())).thenReturn(mockSingleEmployee.getEmployeeName());
+
+            // Act
+            ResponseEntity<String> response = employeeController.deleteEmployeeById(mockSingleEmployee.getId());
+
+            // Assert
+            assertEquals(200, response.getStatusCode().value());
+            assertEquals(mockSingleEmployee.getEmployeeName(), response.getBody());
+            verify(employeeService).deleteEmployeeById(mockSingleEmployee.getId());
         }
     }
 }
