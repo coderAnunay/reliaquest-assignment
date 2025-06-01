@@ -4,9 +4,14 @@ import com.reliaquest.api.dto.CreateEmployeeDTO;
 import com.reliaquest.api.dto.EmployeeDTO;
 import com.reliaquest.api.exception.ClientBadRequestException;
 import com.reliaquest.api.service.EmployeeService;
+
+import java.net.URI;
 import java.util.List;
 import java.util.UUID;
+
+import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
 @RestController
@@ -62,12 +67,25 @@ public class EmployeeController implements IEmployeeController<EmployeeDTO, Crea
     }
 
     @Override
-    public ResponseEntity<EmployeeDTO> createEmployee(CreateEmployeeDTO employeeInput) {
-        return null;
+    public ResponseEntity<EmployeeDTO> createEmployee(@Valid @RequestBody CreateEmployeeDTO employeeInput) {
+        EmployeeDTO employee = employeeService.createEmployee(employeeInput);
+        URI location = URI.create("/" + employee.getId());
+        return ResponseEntity.created(location).body(employee);
     }
 
     @Override
     public ResponseEntity<String> deleteEmployeeById(String id) {
-        return null;
+        if (id == null || id.isBlank()) {
+            throw new ClientBadRequestException("Employee ID is required");
+        } else {
+            try {
+                UUID.fromString(id);
+            } catch (IllegalArgumentException ex) {
+                throw new ClientBadRequestException("Employee ID must be a valid UUID");
+            }
+        }
+
+        String deletedEmployee = employeeService.deleteEmployeeById(id);
+        return ResponseEntity.ok(deletedEmployee);
     }
 }
