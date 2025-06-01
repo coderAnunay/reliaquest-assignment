@@ -8,11 +8,10 @@ import com.reliaquest.api.dto.EmployeeDTO;
 import com.reliaquest.api.exception.ClientBadRequestException;
 import com.reliaquest.api.exception.ResourceNotFoundException;
 import com.reliaquest.api.service.EmployeeService;
+import com.reliaquest.api.util.TestDataFactory;
 import java.util.Collections;
 import java.util.List;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -29,6 +28,10 @@ public class EmployeeControllerTest {
     @InjectMocks
     private EmployeeController employeeController;
 
+    private EmployeeDTO mockSingleEmployee = TestDataFactory.getTestEmployeeDTO();
+
+    private List<EmployeeDTO> mockEmployees = TestDataFactory.getTestEmployeeDTOList(15);
+
     @Nested
     @DisplayName("EmployeeController - getEmployeeById()")
     class GetEmployeeByIdTests {
@@ -37,22 +40,15 @@ public class EmployeeControllerTest {
         @DisplayName("should return Employee when employee ID is valid")
         void shouldReturnEmployee_whenEmployeeIdIsValid() {
             // Arrange
-            String validId = "123e4567-e89b-12d3-a456-425514174000";
-            EmployeeDTO mockValidEmployee = new EmployeeDTO(
-                    "123e4567-e89b-12d3-a456-425514174000",
-                    "Jim Donga",
-                    64350,
-                    28,
-                    "Construction Field Staff",
-                    "jim@company.com");
-            when(employeeService.getEmployeeById(validId)).thenReturn(mockValidEmployee);
+            String validId = mockSingleEmployee.getId();
+            when(employeeService.getEmployeeById(validId)).thenReturn(mockSingleEmployee);
 
             // Act
             ResponseEntity<EmployeeDTO> response = employeeController.getEmployeeById(validId);
 
             // Assert
             assertEquals(200, response.getStatusCode().value());
-            assertEquals(mockValidEmployee, response.getBody());
+            assertEquals(mockSingleEmployee, response.getBody());
             verify(employeeService).getEmployeeById(validId);
         }
 
@@ -92,21 +88,6 @@ public class EmployeeControllerTest {
         @DisplayName("should return all employees when employees exist")
         void shouldReturnAllEmployees_whenEmployeesExist() {
             // Arrange
-            List<EmployeeDTO> mockEmployees = List.of(
-                    new EmployeeDTO(
-                            "4a76c411-e94b-4cff-bbc2-a746249f175d",
-                            "Reid Graham",
-                            90155,
-                            25,
-                            "Construction Producer",
-                            "konklux@company.com"),
-                    new EmployeeDTO(
-                            "bfa01553-68f7-49c4-b0g7-780002e9ebf2",
-                            "Jim Donga",
-                            64350,
-                            28,
-                            "Construction Field Staff",
-                            "jim@company.com"));
             when(employeeService.getAllEmployees()).thenReturn(mockEmployees);
 
             // Act

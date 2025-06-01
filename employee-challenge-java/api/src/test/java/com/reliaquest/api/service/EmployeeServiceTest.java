@@ -7,13 +7,10 @@ import static org.mockito.Mockito.*;
 import com.reliaquest.api.client.EmployeeApiClient;
 import com.reliaquest.api.dto.EmployeeDTO;
 import com.reliaquest.api.exception.ResourceNotFoundException;
+import com.reliaquest.api.util.TestDataFactory;
 import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.Objects;
-import org.junit.jupiter.api.DisplayName;
-import org.junit.jupiter.api.Nested;
-import org.junit.jupiter.api.Test;
+import org.junit.jupiter.api.*;
 import org.junit.jupiter.api.extension.ExtendWith;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
@@ -25,51 +22,15 @@ import org.springframework.web.reactive.function.client.WebClientResponseExcepti
 @DisplayName("EmployeeService Unit Tests")
 public class EmployeeServiceTest {
 
-    // Mock single employee data for testing
-    private final EmployeeDTO mockSingleEmployee = new EmployeeDTO(
-            "4a76c411-e94b-4cff-bbc2-a746249f175d",
-            "Reid Graham",
-            90155,
-            25,
-            "Construction Producer",
-            "konklux@company.com");
-
-    // Mock list of employees for testing
-    private final List<EmployeeDTO> mockEmployees = List.of(
-            new EmployeeDTO(
-                    "4a76c411-e94b-4cff-bbc2-a746249f175d",
-                    "Reid Graham",
-                    90155,
-                    25,
-                    "Construction Producer",
-                    "konklux@company.com"),
-            new EmployeeDTO(
-                    "4a76c567-e94b-4chh-aac2-b746249f175f",
-                    "Tom Lang",
-                    208820,
-                    34,
-                    "IT Consultant",
-                    "lang@company.com"),
-            new EmployeeDTO(
-                    "b3a01553-68f7-49c4-b0c2-320002e9ebf2",
-                    "Titus Rice",
-                    208820,
-                    35,
-                    "IT Consultant",
-                    "mcshayne@company.com"),
-            new EmployeeDTO(
-                    "bfa01553-68f7-49c4-b0g7-780002e9ebf2",
-                    "Jim Donga",
-                    64350,
-                    28,
-                    "Construction Field Staff",
-                    "jim@company.com"));
-
     @Mock
     private EmployeeApiClient employeeApiClient;
 
     @InjectMocks
     private EmployeeService employeeService;
+
+    private EmployeeDTO mockSingleEmployee = TestDataFactory.getTestEmployeeDTO();
+
+    private List<EmployeeDTO> mockEmployees = TestDataFactory.getTestEmployeeDTOList(15);
 
     @Nested
     @DisplayName("EmployeeService - getEmployeeById()")
@@ -152,11 +113,7 @@ public class EmployeeServiceTest {
         void shouldReturnHighestSalary() {
             // Arrange
             when(employeeApiClient.get(any())).thenReturn(mockEmployees);
-            Integer expectedResult = mockEmployees.stream()
-                    .map(EmployeeDTO::getEmployeeSalary)
-                    .filter(Objects::nonNull)
-                    .max(Integer::compareTo)
-                    .orElse(0);
+            Integer expectedResult = TestDataFactory.getHighestSalary(mockEmployees);
 
             // Act
             Integer actualResult = employeeService.getHighestSalaryOfEmployees();
@@ -198,12 +155,7 @@ public class EmployeeServiceTest {
         void shouldReturnTopTenNamesInOrder() {
             // Arrange
             when(employeeApiClient.get(any())).thenReturn(mockEmployees);
-            List<String> expectedNamesList = mockEmployees.stream()
-                    .filter(e -> e.getEmployeeSalary() != null && e.getEmployeeName() != null)
-                    .sorted(Comparator.comparing(EmployeeDTO::getEmployeeSalary).reversed())
-                    .limit(10)
-                    .map(EmployeeDTO::getEmployeeName)
-                    .toList();
+            List<String> expectedNamesList = TestDataFactory.getTopTenHighestEarningEmployeeNames(mockEmployees);
 
             // Act
             List<String> result = employeeService.getTopTenHighestEarningEmployeeNames();
