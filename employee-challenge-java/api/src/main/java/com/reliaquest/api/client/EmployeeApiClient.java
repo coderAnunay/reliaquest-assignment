@@ -2,6 +2,7 @@ package com.reliaquest.api.client;
 
 import com.reliaquest.api.dto.EmployeeApiResponseWrapper;
 import org.springframework.core.ParameterizedTypeReference;
+import org.springframework.http.HttpMethod;
 import org.springframework.stereotype.Component;
 import org.springframework.web.reactive.function.client.WebClient;
 
@@ -48,6 +49,34 @@ public class EmployeeApiClient {
     public <T> T get(ParameterizedTypeReference<EmployeeApiResponseWrapper<T>> type) {
         EmployeeApiResponseWrapper<T> responseWrapper =
                 employeeApiClient.get().retrieve().bodyToMono(type).block();
+
+        return responseWrapper != null ? responseWrapper.getData() : null;
+    }
+
+    /**
+     * Performs a POST call with a request body and returns the `data` field from the response.
+     */
+    public <T, R> T post(R requestBody, ParameterizedTypeReference<EmployeeApiResponseWrapper<T>> type) {
+        EmployeeApiResponseWrapper<T> responseWrapper = employeeApiClient
+                .post()
+                .bodyValue(requestBody)
+                .retrieve()
+                .bodyToMono(type)
+                .block();
+
+        return responseWrapper != null ? responseWrapper.getData() : null;
+    }
+
+    /**
+     * Performs a DELETE call with path variables and returns the `data` field from the response.
+     */
+    public <T, R> T delete(R requestBody, ParameterizedTypeReference<EmployeeApiResponseWrapper<T>> type) {
+        EmployeeApiResponseWrapper<T> responseWrapper = employeeApiClient
+                .method(HttpMethod.DELETE)
+                .bodyValue(requestBody)
+                .retrieve()
+                .bodyToMono(type)
+                .block();
 
         return responseWrapper != null ? responseWrapper.getData() : null;
     }
