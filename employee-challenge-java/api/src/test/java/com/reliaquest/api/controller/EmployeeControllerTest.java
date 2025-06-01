@@ -296,5 +296,35 @@ public class EmployeeControllerTest {
             assertEquals(mockSingleEmployee.getEmployeeName(), response.getBody());
             verify(employeeService).deleteEmployeeById(mockSingleEmployee.getId());
         }
+
+        @Test
+        @DisplayName("should throw exception when ID provided to delete is null/blank/not valid UUID")
+        void shouldThrowExceptionWhenIdIsNull() {
+            // Arrange
+            String nullId = null;
+            String blankId = "   ";
+            String invalidId = "not-a-uuid";
+
+            // Act & Assert
+            assertThrows(ClientBadRequestException.class, () -> employeeController.deleteEmployeeById(nullId));
+            assertThrows(ClientBadRequestException.class, () -> employeeController.deleteEmployeeById(blankId));
+            assertThrows(ClientBadRequestException.class, () -> employeeController.deleteEmployeeById(invalidId));
+            verify(employeeService, never()).deleteEmployeeById(any());
+        }
+
+        @Test
+        @DisplayName("should delete employee when ID is valid UUID")
+        void shouldDeleteEmployeeWhenIdIsValid() {
+            // Arrange
+            when(employeeService.deleteEmployeeById(mockSingleEmployee.getId())).thenReturn(mockSingleEmployee.getEmployeeName());
+
+            // Act
+            ResponseEntity<String> response = employeeController.deleteEmployeeById(mockSingleEmployee.getId());
+
+            // Assert
+            assertEquals(200, response.getStatusCode().value());
+            assertEquals(mockSingleEmployee.getEmployeeName(), response.getBody());
+            verify(employeeService).deleteEmployeeById(mockSingleEmployee.getId());
+        }
     }
 }
