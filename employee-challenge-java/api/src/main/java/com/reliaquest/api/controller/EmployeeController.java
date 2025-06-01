@@ -26,6 +26,9 @@ public class EmployeeController implements IEmployeeController<EmployeeDTO, Crea
 
     @Override
     public ResponseEntity<List<EmployeeDTO>> getEmployeesByNameSearch(String searchString) {
+        if (searchString == null || searchString.isBlank()) {
+            throw new ClientBadRequestException("Search string must not be null or blank.");
+        }
         List<EmployeeDTO> matches = employeeService.getEmployeesByNameSearch(searchString);
         return ResponseEntity.ok(matches);
     }
