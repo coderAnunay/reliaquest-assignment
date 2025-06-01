@@ -51,8 +51,23 @@ public class EmployeeService {
     }
 
     public List<EmployeeDTO> getEmployeesByNameSearch(final String searchString) {
-        // TODO: call upstream API to search employees by name
-        return List.of();
+        try {
+            List<EmployeeDTO> employees = employeeApiClient.get(new ParameterizedTypeReference<>() {});
+
+            if (employees == null) {
+                return Collections.emptyList();
+            }
+
+            String lowerSearch = searchString.toLowerCase();
+
+            return employees.stream()
+                    .filter(e -> e.getEmployeeName() != null
+                            && e.getEmployeeName().toLowerCase().contains(lowerSearch))
+                    .toList();
+        } catch (WebClientRequestException ex) {
+            LOGGER.error(INTERNAL_SERVER_ERROR, ex);
+            throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
+        }
     }
 
     public Integer getHighestSalaryOfEmployees() {
