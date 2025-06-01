@@ -9,6 +9,7 @@ import com.reliaquest.api.exception.ResourceNotFoundException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Map;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
@@ -111,10 +112,33 @@ public class EmployeeService {
     }
 
     public EmployeeDTO createEmployee(final CreateEmployeeDTO input) {
-        return null;
+        try {
+            return employeeApiClient.post(input, new ParameterizedTypeReference<>() {});
+        } catch (WebClientRequestException ex) {
+            LOGGER.error(INTERNAL_SERVER_ERROR, ex);
+            throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
+        }
     }
 
     public String deleteEmployeeById(final String id) {
-        return null;
+        try {
+            EmployeeDTO employee = employeeApiClient.get(
+                    GET_EMPLOYEE_BY_ID_URI, new Object[] {id}, new ParameterizedTypeReference<>() {});
+
+            if (employee == null
+                    || employee.getEmployeeName() == null
+                    || employee.getEmployeeName().isBlank()) {
+                throw new ResourceNotFoundException("Employee with ID " + id + " not found or has no name.");
+            }
+
+            Map<String, String> requestBody = Map.of("name", employee.getEmployeeName());
+
+            Boolean deleted = employeeApiClient.delete(requestBody, new ParameterizedTypeReference<>() {});
+
+            return Boolean.TRUE.equals(deleted) ? employee.getEmployeeName() : null;
+        } catch (WebClientRequestException ex) {
+            LOGGER.error(INTERNAL_SERVER_ERROR, ex);
+            throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
+        }
     }
 }
