@@ -1,5 +1,6 @@
 package com.reliaquest.api.util;
 
+import com.reliaquest.api.dto.CreateEmployeeDTO;
 import com.reliaquest.api.dto.EmployeeDTO;
 import java.util.*;
 import java.util.stream.IntStream;
@@ -23,6 +24,25 @@ public class TestDataFactory {
                 faker.number().numberBetween(employeeAgeRange.get("min"), employeeAgeRange.get("max")),
                 faker.job().title(),
                 faker.internet().emailAddress());
+    }
+
+    public static EmployeeDTO getTestEmployeeDTOFromCreateEmployeeDTO(CreateEmployeeDTO createEmployeeDTO) {
+        return new EmployeeDTO(
+                UUID.randomUUID().toString(),
+                createEmployeeDTO.getName(),
+                createEmployeeDTO.getSalary(),
+                createEmployeeDTO.getAge(),
+                createEmployeeDTO.getTitle(),
+                faker.internet().emailAddress());
+    }
+
+    // To make integration tests deterministic (e.g search api), we pass a name
+    public static CreateEmployeeDTO getTestCreateEmployeeDTO(final String name) {
+        return new CreateEmployeeDTO(
+                name,
+                faker.number().numberBetween(employeeSalaryRange.get("min"), employeeSalaryRange.get("max")),
+                faker.number().numberBetween(employeeAgeRange.get("min"), employeeAgeRange.get("max")),
+                faker.job().title());
     }
 
     public static List<EmployeeDTO> getTestEmployeeDTOList(int count) {
