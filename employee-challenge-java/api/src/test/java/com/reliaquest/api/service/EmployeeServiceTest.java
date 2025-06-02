@@ -79,7 +79,8 @@ public class EmployeeServiceTest {
         @DisplayName("should throw TooManyRequestsException when upstream api returns 429")
         void shouldThrowTooManyRequestsException_whenUpstreamApiReturns429() {
             // Arrange
-            when(employeeApiClient.get(anyString(), any(), any())).thenThrow(mock(WebClientResponseException.TooManyRequests.class));
+            when(employeeApiClient.get(anyString(), any(), any()))
+                    .thenThrow(mock(WebClientResponseException.TooManyRequests.class));
             String id = mockSingleEmployee.getId();
 
             // Act & Assert
