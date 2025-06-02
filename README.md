@@ -8,7 +8,7 @@ It serves a set of RESTful APIs for managing employees by interacting with an up
 ## 📁 Project Structure
 
 ```
-.
+employee-challenge-java/
 ├── api/                  # Main Spring Boot module
 │   ├── controller/       # REST controllers
 │   ├── dto/              # Data transfer objects
