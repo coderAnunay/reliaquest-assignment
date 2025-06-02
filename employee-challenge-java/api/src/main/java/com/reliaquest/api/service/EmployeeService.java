@@ -6,6 +6,7 @@ import com.reliaquest.api.client.EmployeeApiClient;
 import com.reliaquest.api.dto.CreateEmployeeDTO;
 import com.reliaquest.api.dto.EmployeeDTO;
 import com.reliaquest.api.exception.ResourceNotFoundException;
+import com.reliaquest.api.exception.TooManyRequestsException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -14,7 +15,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.core.ParameterizedTypeReference;
 import org.springframework.stereotype.Service;
-import org.springframework.web.reactive.function.client.WebClientRequestException;
 import org.springframework.web.reactive.function.client.WebClientResponseException;
 
 @Service
@@ -36,7 +36,10 @@ public class EmployeeService {
         } catch (WebClientResponseException.NotFound ex) {
             LOGGER.error(EMPLOYEE_NOT_FOUND, ex);
             throw new ResourceNotFoundException(EMPLOYEE_NOT_FOUND);
-        } catch (WebClientRequestException ex) {
+        } catch (WebClientResponseException.TooManyRequests ex) {
+            LOGGER.error(TOO_MANY_REQUESTS, ex);
+            throw new TooManyRequestsException(TOO_MANY_REQUESTS);
+        } catch (Exception ex) {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
         }
@@ -46,7 +49,10 @@ public class EmployeeService {
         try {
             List<EmployeeDTO> employees = employeeApiClient.get(new ParameterizedTypeReference<>() {});
             return employees;
-        } catch (WebClientRequestException ex) {
+        } catch (WebClientResponseException.TooManyRequests ex) {
+            LOGGER.error(TOO_MANY_REQUESTS, ex);
+            throw new TooManyRequestsException(TOO_MANY_REQUESTS);
+        } catch (Exception ex) {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
         }
@@ -66,7 +72,10 @@ public class EmployeeService {
                     .filter(e -> e.getEmployeeName() != null
                             && e.getEmployeeName().toLowerCase().contains(lowerSearch))
                     .toList();
-        } catch (WebClientRequestException ex) {
+        } catch (WebClientResponseException.TooManyRequests ex) {
+            LOGGER.error(TOO_MANY_REQUESTS, ex);
+            throw new TooManyRequestsException(TOO_MANY_REQUESTS);
+        } catch (Exception ex) {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
         }
@@ -85,7 +94,10 @@ public class EmployeeService {
                     .filter(employeeSalary -> employeeSalary != null)
                     .max(Integer::compareTo)
                     .orElse(0);
-        } catch (WebClientRequestException ex) {
+        } catch (WebClientResponseException.TooManyRequests ex) {
+            LOGGER.error(TOO_MANY_REQUESTS, ex);
+            throw new TooManyRequestsException(TOO_MANY_REQUESTS);
+        } catch (Exception ex) {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
         }
@@ -105,7 +117,10 @@ public class EmployeeService {
                     .limit(10)
                     .map(EmployeeDTO::getEmployeeName)
                     .toList();
-        } catch (WebClientRequestException ex) {
+        } catch (WebClientResponseException.TooManyRequests ex) {
+            LOGGER.error(TOO_MANY_REQUESTS, ex);
+            throw new TooManyRequestsException(TOO_MANY_REQUESTS);
+        } catch (Exception ex) {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
         }
@@ -114,7 +129,10 @@ public class EmployeeService {
     public EmployeeDTO createEmployee(final CreateEmployeeDTO input) {
         try {
             return employeeApiClient.post(input, new ParameterizedTypeReference<>() {});
-        } catch (WebClientRequestException ex) {
+        } catch (WebClientResponseException.TooManyRequests ex) {
+            LOGGER.error(TOO_MANY_REQUESTS, ex);
+            throw new TooManyRequestsException(TOO_MANY_REQUESTS);
+        } catch (Exception ex) {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
         }
@@ -136,7 +154,10 @@ public class EmployeeService {
             Boolean deleted = employeeApiClient.delete(requestBody, new ParameterizedTypeReference<>() {});
 
             return Boolean.TRUE.equals(deleted) ? employee.getEmployeeName() : null;
-        } catch (WebClientRequestException ex) {
+        } catch (WebClientResponseException.TooManyRequests ex) {
+            LOGGER.error(TOO_MANY_REQUESTS, ex);
+            throw new TooManyRequestsException(TOO_MANY_REQUESTS);
+        } catch (Exception ex) {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
         }
