@@ -7,6 +7,7 @@ import static org.mockito.Mockito.*;
 import com.reliaquest.api.client.EmployeeApiClient;
 import com.reliaquest.api.dto.EmployeeDTO;
 import com.reliaquest.api.exception.ResourceNotFoundException;
+import com.reliaquest.api.exception.TooManyRequestsException;
 import com.reliaquest.api.util.TestDataFactory;
 import java.util.Collections;
 import java.util.List;
@@ -28,9 +29,9 @@ public class EmployeeServiceTest {
     @InjectMocks
     private EmployeeService employeeService;
 
-    private EmployeeDTO mockSingleEmployee = TestDataFactory.getTestEmployeeDTO();
+    private final EmployeeDTO mockSingleEmployee = TestDataFactory.getTestEmployeeDTO();
 
-    private List<EmployeeDTO> mockEmployees = TestDataFactory.getTestEmployeeDTOList(15);
+    private final List<EmployeeDTO> mockEmployees = TestDataFactory.getTestEmployeeDTOList(15);
 
     @Nested
     @DisplayName("EmployeeService - getEmployeeById()")
@@ -73,6 +74,17 @@ public class EmployeeServiceTest {
             // Act & Assert
             assertThrows(RuntimeException.class, () -> employeeService.getEmployeeById(id));
         }
+
+        @Test
+        @DisplayName("should throw TooManyRequestsException when upstream api returns 429")
+        void shouldThrowTooManyRequestsException_whenUpstreamApiReturns429() {
+            // Arrange
+            when(employeeApiClient.get(anyString(), any(), any())).thenThrow(mock(WebClientResponseException.TooManyRequests.class));
+            String id = mockSingleEmployee.getId();
+
+            // Act & Assert
+            assertThrows(TooManyRequestsException.class, () -> employeeService.getEmployeeById(id));
+        }
     }
 
     @Nested
@@ -101,6 +113,16 @@ public class EmployeeServiceTest {
 
             // Act & Assert
             assertThrows(RuntimeException.class, () -> employeeService.getAllEmployees());
+        }
+
+        @Test
+        @DisplayName("should throw TooManyRequestsException when upstream api returns 429")
+        void shouldThrowTooManyRequestsException_whenUpstreamApiReturns429() {
+            // Arrange
+            when(employeeApiClient.get(any())).thenThrow(mock(WebClientResponseException.TooManyRequests.class));
+
+            // Act & Assert
+            assertThrows(TooManyRequestsException.class, () -> employeeService.getAllEmployees());
         }
     }
 
@@ -143,6 +165,16 @@ public class EmployeeServiceTest {
 
             // Act & Assert
             assertThrows(RuntimeException.class, () -> employeeService.getHighestSalaryOfEmployees());
+        }
+
+        @Test
+        @DisplayName("should throw TooManyRequestsException when upstream api returns 429")
+        void shouldThrowTooManyRequestsException_whenUpstreamApiReturns429() {
+            // Arrange
+            when(employeeApiClient.get(any())).thenThrow(mock(WebClientResponseException.TooManyRequests.class));
+
+            // Act & Assert
+            assertThrows(TooManyRequestsException.class, () -> employeeService.getHighestSalaryOfEmployees());
         }
     }
 
@@ -187,6 +219,16 @@ public class EmployeeServiceTest {
 
             // Act & Assert
             assertThrows(RuntimeException.class, () -> employeeService.getTopTenHighestEarningEmployeeNames());
+        }
+
+        @Test
+        @DisplayName("should throw TooManyRequestsException when upstream api returns 429")
+        void shouldThrowTooManyRequestsException_whenUpstreamApiReturns429() {
+            // Arrange
+            when(employeeApiClient.get(any())).thenThrow(mock(WebClientResponseException.TooManyRequests.class));
+
+            // Act & Assert
+            assertThrows(TooManyRequestsException.class, () -> employeeService.getTopTenHighestEarningEmployeeNames());
         }
     }
 
@@ -261,13 +303,23 @@ public class EmployeeServiceTest {
         }
 
         @Test
-        @DisplayName("should throw RuntimeException when upstream api dails")
+        @DisplayName("should throw RuntimeException when upstream api fails")
         void shouldThrowRuntimeException_whenUpstreamApiFails() {
             // Arrange
             when(employeeApiClient.get(any())).thenThrow(mock(WebClientRequestException.class));
 
             // Act & Assert
             assertThrows(RuntimeException.class, () -> employeeService.getEmployeesByNameSearch(anyString()));
+        }
+
+        @Test
+        @DisplayName("should throw TooManyRequestsException when upstream api returns 429")
+        void shouldThrowTooManyRequestsException_whenUpstreamApiReturns429() {
+            // Arrange
+            when(employeeApiClient.get(any())).thenThrow(mock(WebClientResponseException.TooManyRequests.class));
+
+            // Act & Assert
+            assertThrows(TooManyRequestsException.class, () -> employeeService.getEmployeesByNameSearch(anyString()));
         }
     }
 }
