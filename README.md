@@ -26,7 +26,7 @@ employee-challenge-java/
 
 ### ✅ Prerequisites
 
-- Java 17+
+- Java 17
 - Gradle (wrapper included)
 - Internet access to resolve dependencies
 - `mock-employee-api` is successfully built and run (refer README.md under the `server` module for instructions)
