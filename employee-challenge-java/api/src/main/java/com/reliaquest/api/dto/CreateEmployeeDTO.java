@@ -1,9 +1,13 @@
 package com.reliaquest.api.dto;
 
 import jakarta.validation.constraints.*;
+import lombok.AllArgsConstructor;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@AllArgsConstructor
+@NoArgsConstructor
 public class CreateEmployeeDTO {
 
     @NotBlank(message = "Name must not be blank")
