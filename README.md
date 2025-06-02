@@ -1,7 +1,6 @@
-# reliaquest-assignment
 # 🧩 Employee API - Spring Boot
 
-It serves a set of RESTful APIs for managing employees by interacting with an upstream mock server.
+It serves a set of RESTful APIs for managing employees by interacting with an upstream `mock-employee-api`
 
 ---
 
@@ -9,14 +8,15 @@ It serves a set of RESTful APIs for managing employees by interacting with an up
 
 ```
 employee-challenge-java/
-├── api/                  # Main Spring Boot module
+├── api/                  # api module (the application)
 │   ├── controller/       # REST controllers
 │   ├── dto/              # Data transfer objects
-│   ├── service/          # Business logic layer
-│   ├── client/           # WebClient-based API client to mock server
+│   ├── service/          # Service layer
+│   ├── client/           # WebClient-based API client to consume `mock-employee-api`
 │   ├── common/           # Constants and utility classes
 │   └── ...               # Application config, main class, etc.
 ├── build.gradle          # Root Gradle build file
+├── server/               # Contains the upstream `mock-employee-api` code
 └── settings.gradle       # Includes `api` module
 ```
 
@@ -29,12 +29,13 @@ employee-challenge-java/
 - Java 17+
 - Gradle (wrapper included)
 - Internet access to resolve dependencies
+- `mock-employee-api` is successfully built and run (refer README.md under the `server` module for instructions)
 
 ---
 
 ## 🛠 Build, Test, and Run
 
-All commands should be run from the **project root**.
+All commands should be run from the **employee-challenge-java**. Look for `settings.gradle`
 
 ### 📦 Build the Project
 
