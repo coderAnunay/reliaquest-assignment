@@ -85,7 +85,7 @@ App will start on the configured port (as defined in `application.yml`).
 
 ---
 
-## 📦 Technologies Used
+## 📦 Technologies/Tools Used
 
 - Java 17
 - Spring Boot
