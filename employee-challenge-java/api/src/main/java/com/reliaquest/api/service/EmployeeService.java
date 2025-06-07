@@ -7,6 +7,7 @@ import com.reliaquest.api.dto.CreateEmployeeDTO;
 import com.reliaquest.api.dto.EmployeeDTO;
 import com.reliaquest.api.exception.ResourceNotFoundException;
 import com.reliaquest.api.exception.TooManyRequestsException;
+import com.reliaquest.api.exception.UpstreamServerException;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -39,6 +40,10 @@ public class EmployeeService {
         } catch (WebClientResponseException.TooManyRequests ex) {
             LOGGER.error(TOO_MANY_REQUESTS, ex);
             throw new TooManyRequestsException(TOO_MANY_REQUESTS);
+        } catch (WebClientResponseException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new UpstreamServerException(
+                    "Upstream error: " + ex.getStatusCode().value(), ex);
         } catch (Exception ex) {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
@@ -52,6 +57,10 @@ public class EmployeeService {
         } catch (WebClientResponseException.TooManyRequests ex) {
             LOGGER.error(TOO_MANY_REQUESTS, ex);
             throw new TooManyRequestsException(TOO_MANY_REQUESTS);
+        } catch (WebClientResponseException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new UpstreamServerException(
+                    "Upstream error: " + ex.getStatusCode().value(), ex);
         } catch (Exception ex) {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
@@ -75,6 +84,10 @@ public class EmployeeService {
         } catch (WebClientResponseException.TooManyRequests ex) {
             LOGGER.error(TOO_MANY_REQUESTS, ex);
             throw new TooManyRequestsException(TOO_MANY_REQUESTS);
+        } catch (WebClientResponseException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new UpstreamServerException(
+                    "Upstream error: " + ex.getStatusCode().value(), ex);
         } catch (Exception ex) {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
@@ -97,6 +110,10 @@ public class EmployeeService {
         } catch (WebClientResponseException.TooManyRequests ex) {
             LOGGER.error(TOO_MANY_REQUESTS, ex);
             throw new TooManyRequestsException(TOO_MANY_REQUESTS);
+        } catch (WebClientResponseException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new UpstreamServerException(
+                    "Upstream error: " + ex.getStatusCode().value(), ex);
         } catch (Exception ex) {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
@@ -120,6 +137,10 @@ public class EmployeeService {
         } catch (WebClientResponseException.TooManyRequests ex) {
             LOGGER.error(TOO_MANY_REQUESTS, ex);
             throw new TooManyRequestsException(TOO_MANY_REQUESTS);
+        } catch (WebClientResponseException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new UpstreamServerException(
+                    "Upstream error: " + ex.getStatusCode().value(), ex);
         } catch (Exception ex) {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
@@ -132,6 +153,10 @@ public class EmployeeService {
         } catch (WebClientResponseException.TooManyRequests ex) {
             LOGGER.error(TOO_MANY_REQUESTS, ex);
             throw new TooManyRequestsException(TOO_MANY_REQUESTS);
+        } catch (WebClientResponseException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new UpstreamServerException(
+                    "Upstream error: " + ex.getStatusCode().value(), ex);
         } catch (Exception ex) {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
@@ -157,6 +182,10 @@ public class EmployeeService {
         } catch (WebClientResponseException.TooManyRequests ex) {
             LOGGER.error(TOO_MANY_REQUESTS, ex);
             throw new TooManyRequestsException(TOO_MANY_REQUESTS);
+        } catch (WebClientResponseException ex) {
+            LOGGER.error(ex.getMessage(), ex);
+            throw new UpstreamServerException(
+                    "Upstream error: " + ex.getStatusCode().value(), ex);
         } catch (Exception ex) {
             LOGGER.error(INTERNAL_SERVER_ERROR, ex);
             throw new RuntimeException(INTERNAL_SERVER_ERROR, ex);
